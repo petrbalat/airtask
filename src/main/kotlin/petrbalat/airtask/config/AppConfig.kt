@@ -8,5 +8,8 @@ import org.springframework.web.reactive.function.client.WebClient
 class AppConfig {
 
     @Bean("jsonplaceholder")
-    fun webClient(): WebClient = WebClient.create("https://jsonplaceholder.typicode.com")
+    fun webClient(): WebClient = jsonWebClient
 }
+
+inline val jsonWebClient: WebClient
+    get() = WebClient.create("https://jsonplaceholder.typicode.com")

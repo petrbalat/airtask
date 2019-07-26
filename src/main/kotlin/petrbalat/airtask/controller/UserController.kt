@@ -12,7 +12,7 @@ import petrbalat.airtask.dto.UserDto
 import reactor.core.publisher.Mono
 
 /**
- * TODO paralel branch, cli, test + integration test
+ * TODO paralel branch, test + integration test
  */
 @RestController
 @RequestMapping("/api/user")
