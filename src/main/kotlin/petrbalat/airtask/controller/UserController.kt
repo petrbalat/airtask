@@ -9,13 +9,17 @@ import org.springframework.web.reactive.function.client.awaitBody
 import org.springframework.web.reactive.function.client.awaitExchange
 import petrbalat.airtask.dto.PostDto
 import petrbalat.airtask.dto.UserDto
+import reactor.core.publisher.Mono
 
+/**
+ * TODO paralel branch, cli, test + integration test
+ */
 @RestController
 @RequestMapping("/api/user")
 class UserController(private val client: WebClient) {
 
     @GetMapping("/suspend/{id}")
-    suspend fun backends(@PathVariable id: Int): UserDto {
+    suspend fun suspend(@PathVariable id: Int): UserDto {
         val userAsync = client.get().uri("/users/$id").awaitExchange()
         val postsAsync = client.get().uri { builder -> builder.path("/posts").queryParam("userId", id).build() }
                 .awaitExchange()
@@ -24,5 +28,16 @@ class UserController(private val client: WebClient) {
         val posts: List<PostDto> = postsAsync.awaitBody()
 
         return user.copy(posts = posts)
+    }
+
+    @GetMapping("/reactor/{id}")
+    fun reactor(@PathVariable id: Int): Mono<UserDto> {
+        val userMono: Mono<UserDto> = client.get().uri("/users/$id").retrieve().bodyToMono(UserDto::class.java)
+        val postsMono: Mono<List<PostDto>> = client.get().uri { builder -> builder.path("/posts").queryParam("userId", id).build() }
+                .retrieve().bodyToFlux(PostDto::class.java).collectList()
+
+        return userMono.zipWith(postsMono).map {
+            it.t1.copy(posts = it.t2)
+        }
     }
 }
