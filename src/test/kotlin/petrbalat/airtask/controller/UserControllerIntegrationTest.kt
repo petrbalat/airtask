@@ -39,9 +39,18 @@ class UserControllerIntegrationTest : AbstractIntegrationTests() {
     @Test
     fun performanceUserId() = runBlocking(newFixedThreadPoolContext(100, "test")) {
         // warm
-        client.get().uri("/api/user/reactor/{id}", 1)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
+        fun performSuspend() {
+            client.get().uri("/api/user/suspend/{id}", 1)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .exchange()
+        }
+
+        val suspendTime = measureTimeMillis {
+            performSuspend()
+            //sync 456 millisec
+            //async 65 millisec
+        }
+        println("Time for perform supend get $suspendTime millisec")
 
         val time = measureTimeMillis {
             (1..100).map {
@@ -59,6 +68,7 @@ class UserControllerIntegrationTest : AbstractIntegrationTests() {
         println("Time for perform get $time millisec")
 //        assertTrue(time <= 1000)
     }
+
 }
 
 

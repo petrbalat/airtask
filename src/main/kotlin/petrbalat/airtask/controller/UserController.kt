@@ -1,5 +1,8 @@
 package petrbalat.airtask.controller
 
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.reactive.awaitFirst
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -20,10 +23,10 @@ import reactor.core.publisher.Mono
 class UserController(private val userService: UserService) {
 
     @GetMapping("/suspend/{id}")
-    suspend fun suspend(@PathVariable id: Int): UserDto {
-        val user: UserDto = userService.fetchBasicDataById(id).awaitFirst()
-        val posts: List<PostDto> = userService.fetchPostsById(id).awaitFirst()
-        return user.copy(posts = posts)
+    suspend fun suspend(@PathVariable id: Int): UserDto = coroutineScope {
+        val user: Deferred<UserDto> = async { userService.fetchBasicDataById(id).awaitFirst() }
+        val posts: Deferred<List<PostDto>> = async { userService.fetchPostsById(id).awaitFirst() }
+        user.await().copy(posts = posts.await())
     }
 
     @GetMapping("/reactor/{id}")
