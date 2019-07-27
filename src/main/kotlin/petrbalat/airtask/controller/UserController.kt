@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono
 import petrbalat.airtask.util.*
 
 /**
- * TODO paralel branch, test + integration test
+ * TODO paralel branch,
  */
 @RestController
 @RequestMapping("/api/user")
