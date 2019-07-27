@@ -11,6 +11,7 @@ import petrbalat.airtask.dto.PostDto
 import petrbalat.airtask.dto.UserDto
 import petrbalat.airtask.service.UserService
 import reactor.core.publisher.Mono
+import petrbalat.airtask.util.*
 
 /**
  * TODO paralel branch, test + integration test
@@ -30,8 +31,8 @@ class UserController(private val userService: UserService) {
     fun reactor(@PathVariable id: Int): Mono<UserDto> {
         val userMono: Mono<UserDto> = userService.fetchBasicDataById(id)
         val postsMono: Mono<List<PostDto>> = userService.fetchPostsById(id)
-        return userMono.zipWith(postsMono).map {
-            it.t1.copy(posts = it.t2)
+        return userMono.zipWith(postsMono).map { (user, posts) ->
+            user.copy(posts = posts)
         }
     }
 }
