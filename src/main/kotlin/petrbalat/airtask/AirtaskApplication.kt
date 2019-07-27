@@ -13,8 +13,7 @@ class AirtaskApplication
 fun main(args: Array<String>) {
 	val userId: Int? = args.getOrNull(0)?.substringAfter("--userId=")?.toIntOrNull()
 	if (userId != null) {
-		//TODO disable logging
-		val result = UserController(UserService(jsonWebClient)).reactor(userId).map {
+		val result: String? = UserController(UserService(jsonWebClient)).reactor(userId).map {
 			mapper.writeValueAsString(it)
 		}.block()
 		println(result)

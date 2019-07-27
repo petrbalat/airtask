@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="applicationLog" class="ch.qos.logback.core.helpers.NOPAppender">
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="applicationLog"/>
+    </root>
+</configuration>
